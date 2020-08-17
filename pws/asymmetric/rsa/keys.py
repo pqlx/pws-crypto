@@ -4,6 +4,8 @@ from pws.asymmetric.rsa.helpers import AbstractText
 from pws.asymmetric.rsa.encrypt import encrypt as rsa_encrypt
 from pws.asymmetric.rsa.decrypt import decrypt as rsa_decrypt
 
+
+
 class RSAPublicKey:
     
     def __init__(self, e, n):
@@ -81,7 +83,12 @@ def demo():
     else:
         print("[x] Fail! Original and decrypted do NOT match.")
 
-RSAKeyPair = Tuple[RSAPublicKey, RSAPrivateKey]
+
+class RSAKeyPair:
+
+    def __init__(self, pub: RSAPublicKey, priv: RSAPrivateKey):
+        self.pub = pub
+        self.priv = priv
 
 if __name__ == "__main__":
     demo()
