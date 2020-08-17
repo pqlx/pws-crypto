@@ -7,7 +7,13 @@ from abstracthash import Hash
 
 
 class MD5(Hash):
-    
+    """
+    Class for managing and computing MD5 digests.
+
+    MD5 is a widely used cryptographic hash function, producing a 128-bit hash value.
+    It has been found to suffer from extensive vulnerabilities, and its only valid use
+    is as a checksum algorithm to verify data integrity.
+    """
 
     per_round_shifts = [
         7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,  7, 12, 17, 22,
@@ -68,10 +74,11 @@ class MD5(Hash):
             
             block = padded[n:n+64]
             
-            def M(idx):
-                # Fetch 32-bit unsigned integer at index `idx` in block.
+            def M(idx: int):
+                # Fetch little-endian 32-bit unsigned integer at index `idx` in block.
                 return struct.unpack("<I", block[4*idx:4*(idx+1)])[0]
-
+            
+            # Initialize hash values for this chunk
             A, B, C, D = a_0, b_0, c_0, d_0
 
             for i in range(64):
@@ -102,7 +109,8 @@ class MD5(Hash):
                 C = B
 
                 B += u32(lr(F, MD5.per_round_shifts[i]))
-                
+            
+            # Add chunk's hash to result so far
             a_0 += A
             b_0 += B
             c_0 += C
@@ -110,6 +118,7 @@ class MD5(Hash):
         
         a_0, b_0, c_0, d_0 = (u32(x) for x in (a_0, b_0, c_0, d_0))
         
+        # Produce the final hash value
         return struct.pack("<I", a_0) + struct.pack("<I", b_0) + struct.pack("<I", c_0) + struct.pack("<I", d_0)
     
 
