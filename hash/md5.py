@@ -23,7 +23,6 @@ class MD5(Hash):
     @staticmethod
     def pad(data: bytes) -> bytes:
         """MD5 padding routine.."""
-    
         
         # The padding routine as follows:
         # Start by appending a `1` bit to the message
@@ -34,7 +33,7 @@ class MD5(Hash):
         
         # We add the 1 to the bit length because of the extra `1` bit appended in step 1
         # we simply reverse the order of operations and then set the bit because it's easier to do so.
-        pad_length_bits = (448 - (bit_length + 1) % 512) + 1
+        pad_length_bits = (448 - (bit_length + 1)) % 512 + 1
         
         # The value should be divisible by eight
         assert (pad_length_bits & 0b111) == 0
@@ -48,7 +47,7 @@ class MD5(Hash):
         padded += struct.pack("<Q", bit_length)
         
         # Padded data should be divisible by 512 bits ( = 64 bytes)
-        assert len(padded) % 64 == 0
+        assert len(padded) % 64 == 0:
 
         return padded
         
@@ -134,13 +133,14 @@ def demo():
     
     import secrets
     import hashlib
+    import random
     from pwn import hexdump
 
-    n_blobs, blob_size = 8, 128
+    n_blobs, blob_range = 8, (128, 512)
 
-    print(f"[+] Generating {n_blobs} blobs of random data, each {blob_size} bytes in size..")
+    print(f"[+] Generating {n_blobs} blobs of random data, each {blob_range} bytes in size..")
     
-    blobs = [secrets.token_bytes(blob_size) for _ in range(n_blobs)]
+    blobs = [secrets.token_bytes(random.randint(*blob_range)) for _ in range(n_blobs)]
 
     
     result = True
