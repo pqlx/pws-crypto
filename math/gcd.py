@@ -1,5 +1,3 @@
-from typing import List
-
 def gcd(*args: int):
     """Calculates the Greatest Common Divisor (gcd) of the integers `args`, using The euclidean algorithm."""
     
