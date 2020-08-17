@@ -53,7 +53,7 @@ class MD5(Hash):
         padded += struct.pack("<Q", bit_length)
         
         # Padded data should be divisible by 512 bits ( = 64 bytes)
-        assert len(padded) % 64 == 0:
+        assert len(padded) % 64 == 0
 
         return padded
         
@@ -134,43 +134,11 @@ class MD5(Hash):
         
         # fill the constants
         cls.constants = [floor(e * abs( sin(i + 1) )) for i in range(64)]
-        
 
-def demo():
-    print("[+] MD5 demo:")
-    print("-"*80)
-    
-    import secrets
-    import hashlib
-    import random
-    from pwn import hexdump
-
-    n_blobs, blob_range = 8, (128, 512)
-
-    print(f"[+] Generating {n_blobs} blobs of random data, each {blob_range} bytes in size..")
-    
-    blobs = [secrets.token_bytes(random.randint(*blob_range)) for _ in range(n_blobs)]
-
-    
-    result = True
-    for i, blob in enumerate(blobs):
-        print(f"[*] Blob {i}:")
-        print(hexdump(blob))
-        
-        md5 = MD5(blob)
-
-        our, their = md5.hexdigest, hashlib.md5(blob).hexdigest()
-        print()
-        print(f"{our} <----- MD5 digest of this implementation")
-        print(f"{their} <----- MD5 digest of hashlib implementation")
-        
-        if our == their:
-            print("[+] Correct result!")
-        else:
-            result = False
-            print("[x] Incorrect result!")
-    
-    return result
 if __name__ == "__main__":
-    demo()
+    
+    from hash_test import run_test
+    from hashlib import md5
+
+    run_test("MD5", MD5, md5)
 
