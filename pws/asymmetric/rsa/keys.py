@@ -18,7 +18,7 @@ class RSAPublicKey:
 
 
     def __repr__(self):
-        return f"RSAPublicKey(\n\te={hex(self.e)},\n\tn={hex(self.n)}\n)"
+        return f"RSAPublicKey(e={hex(self.e)}, n={hex(self.n)})"
 
 
 class RSAPrivateKey:
@@ -32,7 +32,7 @@ class RSAPrivateKey:
         return rsa_decrypt(c, self.d, self.n, pad_type)
     
     def __repr__(self):
-        return f"RSAPrivateKey(\n\td={hex(self.d)},\n\tn={hex(self.n)}\n)"
+        return f"RSAPrivateKey(d={hex(self.d)}, n={hex(self.n)})"
 
 
 def demo():
@@ -89,6 +89,9 @@ class RSAKeyPair:
     def __init__(self, pub: RSAPublicKey, priv: RSAPrivateKey):
         self.pub = pub
         self.priv = priv
+    
+    def __repr__(self):
+        return f"RSAKeyPair(pub={self.pub}, priv={self.priv})"
 
 if __name__ == "__main__":
     demo()
