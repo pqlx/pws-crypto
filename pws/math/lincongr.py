@@ -1,6 +1,6 @@
 from typing import Union, Optional, List, Tuple
 
-from egcd import egcd # for gcd + bezout coeffs.
+from pws.math.egcd import egcd # for gcd + bezout coeffs.
 
 def solve_lincongr(a: int, b: int, n: int, simplify: bool=True) -> Optional[ Union[ List[Tuple[int, int]], Tuple[int, int] ] ]:
     """

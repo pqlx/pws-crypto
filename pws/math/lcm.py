@@ -1,4 +1,4 @@
-from gcd import gcd
+from pws.math.gcd import gcd
 
 def lcm(*args: int):
     """Calculates the Least Common Multiple (lcm) of the integers `args`."""

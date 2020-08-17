@@ -1,8 +1,8 @@
 from typing import Optional
-import pad as RSAPad
+#import pad as RSAPad
 
-from helpers import AbstractText, int_to_bytes, bytes_to_int
-
+from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
+from pws.asymmetric.rsa.pad import unpad_pkcs1_v1_5, unpad_oeap
 
 def decrypt(c_: AbstractText, d: int, n: int, pad_type: Optional[str]="pkcs1") -> AbstractText:
     

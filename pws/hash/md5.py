@@ -1,9 +1,8 @@
 from typing import Optional
 import struct
 from math import sin, floor
-import numpy as np
 
-from abstracthash import Hash
+from pws.hash.abstracthash import Hash
 
 
 class MD5(Hash):

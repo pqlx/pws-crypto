@@ -1,7 +1,8 @@
 from typing import Optional
-import pad as RSAPad
 
-from helpers import AbstractText, int_to_bytes, bytes_to_int
+from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
+
+from pws.asymmetric.rsa.pad import pad_pkcs1_v1_5, pad_oeap
 
 def encrypt(m_: AbstractText, e: int, n: int, pad_type: Optional[str]="pkcs1") -> AbstractText:
     
@@ -9,8 +10,8 @@ def encrypt(m_: AbstractText, e: int, n: int, pad_type: Optional[str]="pkcs1") -
         raise ValueError(f"Invalid padding mode \"{pad_type}\: selected. Valid choices are \"pkcs1\", \"oeap\", \"none\"") 
     
     pad_function = {
-        "pkcs1": RSAPad.pad_pkcs1_v1_5,
-        "oeap":  RSAPad.pad_oeap,
+        "pkcs1": pad_pkcs1_v1_5,
+        "oeap":  pad_oeap,
         "none":  lambda x: x,
         None  :  lambda x: x
     }[pad_type]

@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Tuple, Optional
 
-from helpers import AbstractText
-from encrypt import encrypt as rsa_encrypt
-from decrypt import decrypt as rsa_decrypt
+from pws.asymmetric.rsa.helpers import AbstractText
+from pws.asymmetric.rsa.encrypt import encrypt as rsa_encrypt
+from pws.asymmetric.rsa.decrypt import decrypt as rsa_decrypt
 
 class RSAPublicKey:
     
@@ -80,6 +80,8 @@ def demo():
         print("[+] Success! Original and decrypted match.")
     else:
         print("[x] Fail! Original and decrypted do NOT match.")
+
+RSAKeyPair = Tuple[RSAPublicKey, RSAPrivateKey]
 
 if __name__ == "__main__":
     demo()

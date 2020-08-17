@@ -1,9 +1,8 @@
-
 import random
 from enum import Enum
 
-from pow import int_pow
-from gcd import gcd
+from pws.math.pow import int_pow
+from pws.math.gcd import gcd
 
 class PrimalityType(Enum):
     """

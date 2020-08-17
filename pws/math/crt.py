@@ -1,8 +1,8 @@
 from typing import Optional, List, Tuple
 
-from modinv import modinv
-from gcd import gcd
-from prod import prod
+from pws.math.modinv import modinv
+from pws.math.gcd import gcd
+from pws.math.prod import prod
 
 def crt(*system: Tuple[int, int]) -> Optional[Tuple[int, int]]:
         """

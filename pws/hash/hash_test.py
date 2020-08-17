@@ -1,5 +1,6 @@
 from typing import Type
-from abstracthash import Hash as OurHash
+
+from from pws.hash.abstracthash import Hash as OurHash
 from hashlib import _hashlib
 
 TheirHash = _hashlib.HASH

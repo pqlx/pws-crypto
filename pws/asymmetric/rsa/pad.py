@@ -1,7 +1,7 @@
 import secrets
-from helpers import AbstractText, int_to_bytes, bytes_to_int
+from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
 
-from error import BadPKCS1PaddingException 
+from pws.asymmetric.rsa.error import BadPKCS1PaddingException 
 
 def pad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
     """
