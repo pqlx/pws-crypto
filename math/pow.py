@@ -66,8 +66,6 @@ def int_pow(base: int, power: int, modulus: int=None):
 
         cache[cycle + 1] = result
     
-    from pprint import pprint
-
     def product_mod_n(args: List[int], n: int):
         """ 
         Calculate (base**(2**a_0) * base**(2**a_1) * ... * base**(2**a_k)) mod n, with every `a` in cache.
@@ -82,3 +80,5 @@ def int_pow(base: int, power: int, modulus: int=None):
             return cache[args[0]]
         
         return (cache[args.pop()]) * (product_mod_n(args, n)) % n
+    
+    return product_mod_n(po2, modulus)
