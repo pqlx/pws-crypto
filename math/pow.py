@@ -15,8 +15,12 @@ def int_pow(base: int, power: int, modulus: int=None):
 
     def pow_nomod(base: int, power: int):
         """Calculate `base` raised to `power`."""
+        
+        # Keep a copy
+        base_ = base
+        
         for _ in range(power - 1):
-            base *= base
+            base *= base_
         return base 
 
     if not modulus:
