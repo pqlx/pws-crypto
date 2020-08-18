@@ -8,12 +8,17 @@ from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
 from pws.asymmetric.rsa.error import BadPKCS1PaddingException, BadOAEPPaddingException
 
 
+# PKCS #1 v1.5 implementations
+
 def pad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
     """
     Pad a message using the PKCS#1 v1.5 padding scheme
-    This involves a few metadata padding bytes as well as
-    eight pseudorandomly generated filler bytes
+    
+    The PKCS#1 v1.5 padding specification can be found here:
+    https://tools.ietf.org/html/rfc2313#section-8 
+
     """ 
+
     if isinstance(m_, int):
         m = int_to_bytes(m_)
     else:
@@ -30,7 +35,14 @@ def pad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
 
 
 def unpad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
-    """Unpad a message padded with the PKCS#1 v1.5 padding scheme"""
+    """
+    Unpad a message padded with the PKCS#1 v1.5 padding scheme
+    
+    The PKCS#1 v1.5 padding specification can be found here:
+    https://tools.ietf.org/html/rfc2313#section-9
+
+    """
+
     if isinstance(m_, int):
         # we need to account for the automatically stripped 0 byte at the beginning
         m = b"\x00" + int_to_bytes(m_)
@@ -54,16 +66,26 @@ def unpad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
 
 HashFunc = Callable[[bytes], bytes]
 
-def _oaep_mgf(message: bytes, size: int, hash_func: HashFunc):
+# OAEP implementations
+
+def _mgf(message: bytes, size: int, hash_func: HashFunc):
+    """
+    Mask generation function, used for OAEP and PSS padding.
+    The mask generation function is similar to a cryptograhpic 
+    hash function, except that it supports output of arbitrary lengths.
+    """
+    
     cnt  = 0
     result = b""
     while len(result) < size:
         c = message + struct.pack(">I", cnt)
         result += hash_func(c)
+        cnt += 1
 
     return result[:size]
 
-def _oaep_xor(a: bytes, b: bytes):
+def _xor(a: bytes, b: bytes):
+    """XOR function for two byte sequences of arbitrary (but equal) length"""
     assert len(a) == len(b)
 
     return bytes([x ^ y for x,y in zip(a, b)])
@@ -73,7 +95,13 @@ def pad_oaep(
         n_size: int,
         label: bytes=b"",
         hash_func: HashFunc=lambda x: sha1(x).digest) -> AbstractText:
+    """
+    Pad a message using the OAEP padding scheme
     
+    The OAEP padding specification can be found here:
+    https://tools.ietf.org/html/rfc8017#section-7.1.1
+    """
+
     if isinstance(m_, int):
         m = int_to_bytes(m_)
     else:
@@ -91,11 +119,11 @@ def pad_oaep(
 
     seed = secrets.token_bytes(hash_len)
     
-    db_mask = _oaep_mgf(seed, n_size - hash_len - 1, hash_func=hash_func)
-    masked_db = _oaep_xor(db, db_mask)
+    db_mask = _mgf(seed, n_size - hash_len - 1, hash_func=hash_func)
+    masked_db = _xor(db, db_mask)
     
-    seed_mask = _oaep_mgf(masked_db, hash_len, hash_func=hash_func)
-    masked_seed = _oaep_xor(seed, seed_mask)
+    seed_mask = _mgf(masked_db, hash_len, hash_func=hash_func)
+    masked_seed = _xor(seed, seed_mask)
 
     em = b"\x00" + masked_seed + masked_db
 
@@ -109,7 +137,13 @@ def unpad_oaep(
         n_size: int,
         label: bytes=b"",
         hash_func: HashFunc=lambda x: sha1(x).digest) -> AbstractText:
+    """
+    Unpad a message encoded with the OAEP padding scheme
     
+    The OAEP padding specficiation can be found here:
+    https://tools.ietf.org/html/rfc8017#section-7.1.2
+    """
+
     if isinstance(m_, int):
         # We need to account for the automatically stripped 00 byte
         m = b"\x00" + int_to_bytes(m_)
@@ -127,11 +161,11 @@ def unpad_oaep(
     if y != b"\x00":
         raise BadOAEPPaddingException("Failed first byte check: Y byte nonzero")
 
-    seed_mask = _oaep_mgf(masked_db, hash_len, hash_func=hash_func)
-    seed = _oaep_xor(masked_seed, seed_mask)
+    seed_mask = _mgf(masked_db, hash_len, hash_func=hash_func)
+    seed = _xor(masked_seed, seed_mask)
 
-    db_mask = _oaep_mgf(seed, n_size - hash_len - 1, hash_func=hash_func)
-    db = _oaep_xor(masked_db, db_mask)
+    db_mask = _mgf(seed, n_size - hash_len - 1, hash_func=hash_func)
+    db = _xor(masked_db, db_mask)
 
     l_hash_prime, remainder = db[:hash_len], db[hash_len:]
     
@@ -155,4 +189,5 @@ def unpad_oaep(
         return bytes_to_int(unpadded)
     else:
         return unpadded
-    
+
+# PSS implementations
