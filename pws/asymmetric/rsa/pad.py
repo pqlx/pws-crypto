@@ -146,7 +146,8 @@ def unpad_oaep(
 
     if isinstance(m_, int):
         # We need to account for the automatically stripped 00 byte
-        m = b"\x00" + int_to_bytes(m_)
+        # Gotcha: Simply appending a "00" will fail in certain edge cases (approx. 1/256)
+        m = int_to_bytes(m_, n_size)
     else:
         m = m_
 
@@ -190,4 +191,4 @@ def unpad_oaep(
     else:
         return unpadded
 
-# PSS implementations
+

@@ -11,10 +11,10 @@ def byte_length(i: int) -> int:
     return math.ceil(math.log(i + 1, 0x100))
 
 
-def int_to_bytes(i: int) -> bytes:
+def int_to_bytes(i: int, length: int=-1) -> bytes:
     """Converts integer to a MSB-first byte sequence using the least amount of bytes possible"""
 
-    return i.to_bytes(byte_length(i), "big")
+    return i.to_bytes(byte_length(i) if length == -1 else length, "big")
 
 def bytes_to_int(b: bytes) -> int:
     """Converts MSB-first byte sequence to an integer"""
