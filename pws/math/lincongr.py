@@ -29,6 +29,6 @@ def solve_lincongr(a: int, b: int, n: int, simplify: bool=True) -> Optional[ Uni
     bases = [(b*x + n*k) // gcd_a_n for k in range(0, gcd_a_n)] # all (mod n)
     
     if simplify:
-        return (bases[0], n // gcd_a_n )
+        return (bases[0] % n, n // gcd_a_n )
     else:
-        return [ (b, n) for b in bases]
+        return [ (b % n, n) for b in bases]
