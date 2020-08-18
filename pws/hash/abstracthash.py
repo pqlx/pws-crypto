@@ -9,7 +9,7 @@ class Hash:
         
         self._plaintext: Optional[bytes] = None
 
-        if first:
+        if first != None:
             self.update(first)
 
     

@@ -1,5 +1,5 @@
 import struct
-from abstracthash import Hash
+from pws.hash.abstracthash import Hash
 
 
 class SHA1(Hash):
