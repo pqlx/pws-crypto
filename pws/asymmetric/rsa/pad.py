@@ -5,7 +5,7 @@ import secrets
 from pws.hash import SHA1 as sha1
 
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
-from pws.asymmetric.rsa.error import BadPKCS1PaddingException, BadOAEPPaddingException
+from pws.asymmetric.rsa.error import BadPKCS1PaddingException, BadOAEPPaddingException, BadPSSPaddingException
 
 
 # PKCS #1 v1.5 implementations
@@ -90,11 +90,14 @@ def _xor(a: bytes, b: bytes):
 
     return bytes([x ^ y for x,y in zip(a, b)])
 
+_sha1digest = lambda x: sha1(x).digest
+
 def pad_oaep(
         m_: AbstractText,
         n_size: int,
         label: bytes=b"",
-        hash_func: HashFunc=lambda x: sha1(x).digest) -> AbstractText:
+        hash_func: HashFunc=_sha1digest
+        ) -> AbstractText:
     """
     Pad a message using the OAEP padding scheme
     
@@ -136,7 +139,8 @@ def unpad_oaep(
         m_: AbstractText,
         n_size: int,
         label: bytes=b"",
-        hash_func: HashFunc=lambda x: sha1(x).digest) -> AbstractText:
+        hash_func: HashFunc=_sha1digest
+        ) -> AbstractText:
     """
     Unpad a message encoded with the OAEP padding scheme
     
@@ -191,4 +195,97 @@ def unpad_oaep(
     else:
         return unpadded
 
+# PSS implementations
 
+def pad_pss(
+        m_: AbstractText,
+        n_size: int,
+        salt_len: int = 20,
+        hash_func: HashFunc=_sha1digest
+        ) -> AbstractText:
+        
+    
+    assert salt_len >= 0
+
+    if isinstance(m_, int):
+        m = int_to_bytes(m_)
+    else:
+        m = m_
+
+
+    m_hash = hash_func(m)
+    hash_len = len(m_hash)
+
+    if n_size < hash_len + salt_len +  2:
+        raise BadPSSPaddingException(f"Total size {hash_len + salt_len + 2} too large for key size {n_size} bytes")
+    
+    salt = secrets.token_bytes(salt_len)
+    
+    m_prime = b"\x00" * 8 + m_hash + salt
+
+    m_prime_hash = hash_func(m_prime)
+
+    ps = b"\x00" * (n_size - salt_len - hash_len - 2)
+
+    db = ps + b"\x01" + salt
+
+    assert len(db) == n_size - hash_len - 1
+
+    db_mask = _mgf(m_prime_hash, n_size - hash_len - 1, hash_func=hash_func)
+
+    masked_db = _xor(db, db_mask)
+    
+    em = masked_db + m_prime_hash + b"\xbc"
+
+    if isinstance(m_, int):
+        return bytes_to_int(em)
+    else:
+        return em
+
+def unpad_verify_pss(
+        m_hash: bytes, # original message hash
+        em_: AbstractText, # signature
+        n_size: int,
+        salt_len: int = 20,
+        hash_func: HashFunc=_sha1digest
+        ) -> bool:
+    
+    assert salt_len > 0
+
+    if isinstance(em_, int):
+        em = int_to_bytes(em_, n_size)
+    else:
+        em = em_
+    
+    hash_len = len(m_hash)
+     
+    if len(em) < hash_len + salt_len + 2:
+        raise BadPSSPaddingException(f"Total size needed ({hash_len + salt_len + 2}) too big for message em of length {len(em)}")
+    
+    
+    if em[-1] != 0xbc:
+        raise BadPSSPaddingException(f"Last byte of padded plaintext not 0xbc: rather {hex(em[-1])}")
+
+    masked_db, h = em[:-(hash_len+1)], em[-(hash_len+1):-1]
+    
+    db_mask = _mgf(h, len(em) - hash_len - 1, hash_func=hash_func)
+
+    db = _xor(masked_db, db_mask)
+
+    n_padding = len(em) - hash_len - salt_len - 2
+
+    if sum(db[:n_padding]) != 0:
+        raise BadPSSPaddingException(f"Non-zero padding byte encounter: expected {bytes(n_padding)}, got {db[:n_padding]}")
+    
+    if db[n_padding] != 0x01:
+        raise BadPSSPaddingException(f"Delimiter byte does not match: expected 0x01, got {hex(db[n_padding + 1])}")
+    
+    salt = db[-hash_len:]
+    if len(salt) != hash_len:
+        raise BadPSSPaddingException(f"Failed decomposition into components of DB")
+
+    m_prime = 8 * b"\x00" + m_hash + salt
+
+    m_prime_hash = hash_func(m_prime)
+
+    return m_prime_hash == h

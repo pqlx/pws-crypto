@@ -6,3 +6,6 @@ class BadPKCS1PaddingException(BadPaddingException):
 
 class BadOAEPPaddingException(BadPaddingException):
     pass
+
+class BadPSSPaddingException(BadPaddingException):
+    pass
