@@ -85,8 +85,8 @@ def generate_keypair(keysize: int = 3072, totient_type: str="carmichael") -> RSA
     e = 65537
     
     # Calculate modular multiplicative inverse of e (mod totient)
-    d = modinv(e, totient)[0] 
-
+    d = modinv(e, totient)[0]
+    
     priv = RSAPrivateKey(n = n, d = d)
     pub  = RSAPublicKey(n = n, e = e)
 
