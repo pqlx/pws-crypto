@@ -64,4 +64,13 @@ def do_test(key_size: int=2048, **kwargs):
         print()
 
 if __name__ == "__main__":
-    do_test()
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+            description="RSA Testing module",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--keysize", "-n", default=2048, type=int, help="Key size to generate (in bits). Should be divisible by eight.")
+    parser.add_argument("--blobs", "-b", default=8, type=int, help="Amount of random plaintext blobs to generate.:")
+    args = parser.parse_args()
+
+    do_test(key_size=args.keysize, n_blobs=args.blobs)
