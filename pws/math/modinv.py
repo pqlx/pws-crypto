@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from lincongr import solve_lincongr
+from pws.math.lincongr import solve_lincongr
 
 def modinv(a: int, n: int) -> Optional[Tuple[int, int]]:
     """
