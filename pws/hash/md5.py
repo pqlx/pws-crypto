@@ -136,7 +136,7 @@ class MD5(Hash):
 
 if __name__ == "__main__":
     
-    from hash_test import run_test
+    from pws.hash.hash_test import run_test
     from hashlib import md5
 
     run_test("MD5", MD5, md5)

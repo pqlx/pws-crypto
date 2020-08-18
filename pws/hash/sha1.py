@@ -114,7 +114,7 @@ class SHA1(Hash):
 
 if __name__ == "__main__":
 
-    from hash_test import run_test
+    from pws.hash.hash_test import run_test
     from hashlib import sha1
 
     run_test("SHA-1", SHA1, sha1)
