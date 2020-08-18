@@ -18,8 +18,8 @@ def decrypt(c_: AbstractText, d: int, n: int, pad_type: Optional[str]="pkcs1") -
  
     unpad_function = {
 
-        "pkcs1": RSAPad.unpad_pkcs1_v1_5,
-        "oeap": RSAPad.pad_oeap,
+        "pkcs1": unpad_pkcs1_v1_5,
+        "oeap": unpad_oeap,
         "none": lambda x: x,
         None  : lambda x: x
     }[pad_type]
