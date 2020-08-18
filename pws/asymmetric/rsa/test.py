@@ -62,4 +62,6 @@ def do_test(key_size: int=2048, **kwargs):
             print("[x] Fail! m != decrypt(encrypt(m))")
         print("-"*80)
         print()
-        
+
+if __name__ == "__main__":
+    do_test()
