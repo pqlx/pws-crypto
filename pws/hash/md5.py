@@ -49,7 +49,7 @@ class MD5(Hash):
         padded = data + b"\x80" + b"\x00" * (pad_length_bytes - 1)
         
         # append eight bytes of length
-        padded += struct.pack("<Q", bit_length)
+        padded += struct.pack("<Q", bit_length & ((1 << 64) - 1))
         
         # Padded data should be divisible by 512 bits ( = 64 bytes)
         assert len(padded) % 64 == 0
