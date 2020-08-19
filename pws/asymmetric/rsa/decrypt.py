@@ -4,12 +4,14 @@ from typing import Optional
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length
 from pws.asymmetric.rsa.pad import unpad_pkcs1_v1_5, unpad_oaep
 
+from pws.asymmetric.rsa.error import RSADecryptionException
+
 from pws.math import int_pow
 
 def decrypt(c_: AbstractText, d: int, n: int, pad_type: Optional[str]="pkcs1", **kwargs) -> AbstractText:
     
     if pad_type and not pad_type in ["pkcs1", "oaep", "none"]:
-        raise ValueError(f"Invalid padding mode \"{pad_type}\: selected. Valid choices are \"pkcs1\", \"oaep\", \"none\"") 
+        raise RSADecryptionException(f"Invalid padding mode \"{pad_type}\: selected. Valid choices are \"pkcs1\", \"oaep\", \"none\"") 
     
     if isinstance(c_, bytes):
         c = bytes_to_int(c_)

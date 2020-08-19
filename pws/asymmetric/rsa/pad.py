@@ -7,7 +7,7 @@ from math import ceil
 from pws.hash import SHA1 as sha1
 
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
-from pws.asymmetric.rsa.error import BadPKCS1PaddingException, BadOAEPPaddingException, BadPSSPaddingException
+from pws.asymmetric.rsa.error import RSAPKCS1PaddingException, RSAOAEPPaddingException, RSAPSSPaddingException
 
 
 # PKCS #1 v1.5 implementations
@@ -53,10 +53,10 @@ def unpad_pkcs1_v1_5(m_: AbstractText) -> AbstractText:
     
     
     if m[0] != 0x00 or m[1] != 0x02 or m[10] != 0x00:
-        raise BadPKCS1PaddingException("Invalid PKCS#1 v1.5 padding metadata byte(s)!")
+        raise RSAPKCS1PaddingException("Invalid PKCS#1 v1.5 padding metadata byte(s)!")
 
     if any(x == 0 for x in m[2:10]):
-        raise BadPKCS1PaddingException("Invalid PKCS#1 v1.5 padding byte(s) 00")
+        raise RSAPKCS1PaddingException("Invalid PKCS#1 v1.5 padding byte(s) 00")
 
     unpadded = m[11:]
 
@@ -120,7 +120,7 @@ def pad_oaep(
     
     # the message length is longer than supported (that is: the padded result will be bigger than `n`), bail out.
     if message_len > n_size - 2 * hash_len - 2:
-        raise BadOAEPPaddingException(f"Message too long. Expected value <= {n_size - 2 * hash_len - 2}, got {message_len}")
+        raise RSAOAEPPaddingException(f"Message too long. Expected value <= {n_size - 2 * hash_len - 2}, got {message_len}")
     
     # generate a padding string ps to fill up all available space with 00 bytes
     # ps may have a length of zero.
@@ -184,11 +184,11 @@ def unpad_oaep(
     
     # simple length checks
     if not ( len(y) == 1 and len(masked_seed) == hash_len and len(masked_db) == (n_size - hash_len - 1)):
-        raise BadOAEPPaddingException("Failed decomposition of padded plaintext into components.")
+        raise RSAOAEPPaddingException("Failed decomposition of padded plaintext into components.")
     
     # if the first byte is not zero, bail out
     if y != b"\x00":
-        raise BadOAEPPaddingException("Failed first byte check: Y byte nonzero")
+        raise RSAOAEPPaddingException("Failed first byte check: Y byte nonzero")
     
     # recover our seed by generating a seed mask from masked_db
     seed_mask = _mgf(masked_db, hash_len, hash_func=hash_func)
@@ -203,11 +203,11 @@ def unpad_oaep(
     
     # simple length check
     if len(l_hash_prime) != hash_len:
-        raise BadOAEPPaddingException("Failed decomposition of label hash")
+        raise RSAOAEPPaddingException("Failed decomposition of label hash")
     
     # label integrity check failed.
     if l_hash_prime != l_hash:
-        raise BadOAEPPaddingException(f"Failed label hash check: {l_hash_prime}, expected {l_hash}")
+        raise RSAOAEPPaddingException(f"Failed label hash check: {l_hash_prime}, expected {l_hash}")
     
     # try getting the delimiter
     try:
@@ -215,11 +215,11 @@ def unpad_oaep(
     
     # if no delimiter is found, bail out.
     except ValueError: # subsection not found
-        raise BadOAEPPaddingException("Delimiter byte 01 not found in padded plaintext")
+        raise RSAOAEPPaddingException("Delimiter byte 01 not found in padded plaintext")
     
     # if not all bytes before the delimiter are 00, bail out as well.
     if any(remainder[:delimiter_idx]):
-        raise BadOAEPPaddingException(f"Padding bytes not all 00: {remainder[:delimiter_idx]}, expected{bytes(delimiter_idx)}")
+        raise RSAOAEPPaddingException(f"Padding bytes not all 00: {remainder[:delimiter_idx]}, expected{bytes(delimiter_idx)}")
     # get the unpadded message
     unpadded = remainder[delimiter_idx+1:]
     
@@ -269,7 +269,7 @@ def pad_pss(
     # this should rarely, if never, occur, because a salt length of i.e 20 is more than enough, and hash functions
     # do not tend to give terribly large outputs. An RSA key modulus should be AT LEAST 512 bits = 64 bytes.
     if n_size < hash_len + salt_len + 2:
-        raise BadPSSPaddingException(f"Total size {hash_len + salt_len + 2} too large for key size {n_size} bytes. Consider using a smaller salt.")
+        raise RSAPSSPaddingException(f"Total size {hash_len + salt_len + 2} too large for key size {n_size} bytes. Consider using a smaller salt.")
     
     # generate a salt of length `salt_len`. it is possible for salt_len to be 0, in which case a deterministic
     # signature is generated (which is not advised).
@@ -353,11 +353,11 @@ def unpad_verify_pss(
     
     # make sure the encoded message is not too big for the parameters supplied.
     if len(em) < hash_len + salt_len + 2:
-        raise BadPSSPaddingException(f"Total size needed ({hash_len + salt_len + 2}) too big for message em of length {len(em)}")
+        raise RSAPSSPaddingException(f"Total size needed ({hash_len + salt_len + 2}) too big for message em of length {len(em)}")
     
     # Verify the identification byte.
     if em[-1] != 0xbc:
-        raise BadPSSPaddingException(f"Last byte of padded plaintext not 0xbc: rather {hex(em[-1])}")
+        raise RSAPSSPaddingException(f"Last byte of padded plaintext not 0xbc: rather {hex(em[-1])}")
     
     # decompose the encoded message into the masked data block and hash
     masked_db, h = bytearray(em[:-(hash_len+1)]), em[-(hash_len+1):-1]
@@ -371,7 +371,7 @@ def unpad_verify_pss(
         # notice how this mask is just the inverse of the mask used in the `pad_pss` routine.
 
         if masked_db[0] & (~((1 << (8 - to_be_zero)) - 1) & 0xff) != 0:
-            raise BadPSSPaddingException("Bit remainder of first masked db byte not zero!")
+            raise RSAPSSPaddingException("Bit remainder of first masked db byte not zero!")
     
     masked_db = bytes(masked_db)
     
@@ -388,16 +388,16 @@ def unpad_verify_pss(
     
     # If there's any non-zero bytes in the padding, bail out.
     if any(db[:n_padding]):
-        raise BadPSSPaddingException(f"Non-zero padding byte encounter: expected {bytes(n_padding)}, got {db[:n_padding]}")
+        raise RSAPSSPaddingException(f"Non-zero padding byte encounter: expected {bytes(n_padding)}, got {db[:n_padding]}")
     
     # If there's no delimiter byte 01, bail out.
     if db[n_padding] != 0x01:
-        raise BadPSSPaddingException(f"Delimiter byte does not match: expected 0x01, got {hex(db[n_padding + 1])}")
+        raise RSAPSSPaddingException(f"Delimiter byte does not match: expected 0x01, got {hex(db[n_padding + 1])}")
     
     # fetch the salt from the data block.
     salt = db[-hash_len:]
     if len(salt) != hash_len:
-        raise BadPSSPaddingException(f"Failed decomposition into components of DB")
+        raise RSAPSSPaddingException(f"Failed decomposition into components of DB")
     
     # Construct the hash again by appending 8 null bytes, the message hash, and the salt.
     m_prime = 8 * b"\x00" + m_hash + salt

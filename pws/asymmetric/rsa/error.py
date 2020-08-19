@@ -1,11 +1,26 @@
-class BadPaddingException(Exception):
+class RSAException(Exception):
     pass
 
-class BadPKCS1PaddingException(BadPaddingException):
+class RSAEncryptionException(RSAException):
     pass
 
-class BadOAEPPaddingException(BadPaddingException):
+class RSADecryptionException(RSAException):
     pass
 
-class BadPSSPaddingException(BadPaddingException):
+class RSASignException(RSAException):
+    pass
+
+class RSAVerifyException(RSAException):
+    pass
+
+class RSAPaddingException(RSAException):
+    pass
+
+class RSAPKCS1PaddingException(RSAPaddingException):
+    pass
+
+class RSAOAEPPaddingException(RSAPaddingException):
+    pass
+
+class RSAPSSPaddingException(RSAPaddingException):
     pass

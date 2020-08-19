@@ -5,12 +5,14 @@ from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int,
 from pws.asymmetric.rsa.pad import unpad_verify_pss
 from pws.hash import SHA1
 
+from pws.asymmetric.rsa.error import RSAVerifyException
+
 from pws.math import int_pow
 
 def verify(m: AbstractText, sigma: AbstractText, e: int, n: int, pad_type: Optional[str]="pss", **kwargs) -> bool:
 
     if pad_type and not pad_type in ["pss", "none"]:
-        raise ValueError("Invalid padding mode \"{pad_type}\" selected. Valid choices are \"pss\", \"none\"")
+        raise RSAVerifyException("Invalid padding mode \"{pad_type}\" selected. Valid choices are \"pss\", \"none\"")
     
 
     hash_func = kwargs.get("hash_func", lambda x: SHA1(x).digest)
