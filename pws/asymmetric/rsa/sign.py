@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length
+from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length, bit_length
 
 from pws.asymmetric.rsa.pad import pad_pss
 
@@ -11,7 +11,7 @@ def sign(m_: AbstractText, d: int, n: int, pad_type: Optional[str]="pss", **kwra
 
     
     pad_function = {
-            "pss": lambda x: pad_pss(x, n_size=byte_length(n)),
+            "pss": lambda x: pad_pss(x, n_size_bits=(bit_length(n) - 1)),
             "none": lambda x: x,
             None: lambda x: x
             }[pad_type]

@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length
+from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length, bit_length
 
 from pws.asymmetric.rsa.pad import unpad_verify_pss
 from pws.hash import SHA1
@@ -27,7 +27,7 @@ def verify(m: AbstractText, sigma: AbstractText, e: int, n: int, pad_type: Optio
     
     # takes a digest and a "decrypted" signature
     unpad_verify_function = {
-        "pss": lambda m_, a: unpad_verify_pss(m_, a, n_size=byte_length(n), hash_func=hash_func),
+        "pss": lambda m_, a: unpad_verify_pss(m_, a, n_size_bits=(bit_length(n) - 1), hash_func=hash_func),
         "none": lambda m_, a: m_ == a,
         None: lambda m_, a: m_ == a
     }[pad_type]

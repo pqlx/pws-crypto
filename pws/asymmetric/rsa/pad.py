@@ -2,6 +2,8 @@ from typing import Callable
 import struct
 import secrets
 
+from math import ceil
+
 from pws.hash import SHA1 as sha1
 
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
@@ -199,14 +201,15 @@ def unpad_oaep(
 
 def pad_pss(
         m_: AbstractText,
-        n_size: int,
+        n_size_bits: int,
         salt_len: int = 20,
         hash_func: HashFunc=_sha1digest
         ) -> AbstractText:
         
     
     assert salt_len >= 0
-
+    
+    n_size = ceil( n_size_bits / 8)
     if isinstance(m_, int):
         m = int_to_bytes(m_)
     else:
@@ -233,8 +236,15 @@ def pad_pss(
 
     db_mask = _mgf(m_prime_hash, n_size - hash_len - 1, hash_func=hash_func)
 
-    masked_db = _xor(db, db_mask)
+    masked_db = bytearray(_xor(db, db_mask))
     
+    to_zero = 8 * n_size - n_size_bits
+    
+    if to_zero:
+        masked_db[0] &= ((1 << (8 - to_zero)) - 1)
+    
+    masked_db = bytes(masked_db)
+
     em = masked_db + m_prime_hash + b"\xbc"
 
     if isinstance(m_, int):
@@ -245,20 +255,23 @@ def pad_pss(
 def unpad_verify_pss(
         m_hash: bytes, # original message hash
         em_: AbstractText, # signature
-        n_size: int,
+        n_size_bits: int,
         salt_len: int = 20,
         hash_func: HashFunc=_sha1digest
         ) -> bool:
     
     assert salt_len > 0
+    
 
+    n_size = ceil(n_size_bits / 8)
+    
     if isinstance(em_, int):
         em = int_to_bytes(em_, n_size)
     else:
         em = em_
     
     hash_len = len(m_hash)
-     
+
     if len(em) < hash_len + salt_len + 2:
         raise BadPSSPaddingException(f"Total size needed ({hash_len + salt_len + 2}) too big for message em of length {len(em)}")
     
@@ -266,11 +279,22 @@ def unpad_verify_pss(
     if em[-1] != 0xbc:
         raise BadPSSPaddingException(f"Last byte of padded plaintext not 0xbc: rather {hex(em[-1])}")
 
-    masked_db, h = em[:-(hash_len+1)], em[-(hash_len+1):-1]
+    masked_db, h = bytearray(em[:-(hash_len+1)]), em[-(hash_len+1):-1]
     
-    db_mask = _mgf(h, len(em) - hash_len - 1, hash_func=hash_func)
+    to_be_zero = 8 * n_size - n_size_bits
+    
+    if to_be_zero:
+        if masked_db[0] & (~((1 << (8 - to_be_zero)) - 1) & 0xff) != 0:
+            raise BadPSSPaddingException("Bit remainder of first masked db byte not zero!")
+    
+    masked_db = bytes(masked_db)
 
-    db = _xor(masked_db, db_mask)
+    db_mask = _mgf(h, len(em) - hash_len - 1, hash_func=hash_func)
+    
+    db = bytearray(_xor(masked_db, db_mask))
+    
+    if to_be_zero:
+        db[0] &= ((1 << (8 - to_be_zero)) - 1)
 
     n_padding = len(em) - hash_len - salt_len - 2
 

@@ -10,6 +10,10 @@ def byte_length(i: int) -> int:
     # i.e math.log(0x100, 0x100) = 1 but needs 2 bytes
     return math.ceil(math.log(i + 1, 0x100))
 
+def bit_length(i: int) -> int:
+    """Returns the minimal amount of bits needed to represent unsigned integer `i`."""
+
+    return math.ceil(math.log(i + 1, 2))
 
 def int_to_bytes(i: int, length: int=-1) -> bytes:
     """Converts integer to a MSB-first byte sequence using the least amount of bytes possible"""
