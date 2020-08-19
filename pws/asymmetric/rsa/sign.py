@@ -1,8 +1,9 @@
 from typing import Optional
 
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length, bit_length
-
 from pws.asymmetric.rsa.pad import pad_pss
+
+from pws.math import int_pow
 
 def sign(m_: AbstractText, d: int, n: int, pad_type: Optional[str]="pss", **kwrags) -> AbstractText:
     
@@ -26,7 +27,7 @@ def sign(m_: AbstractText, d: int, n: int, pad_type: Optional[str]="pss", **kwra
         print(n)
         raise ValueError("m too big. Assertion 0 <= m < n should hold at all times")
 
-    sigma = pow(m, d, n)
+    sigma = int_pow(m, d, n)
 
     if isinstance(m_, bytes):
         return int_to_bytes(sigma)

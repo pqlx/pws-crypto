@@ -4,6 +4,8 @@ from typing import Optional
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length
 from pws.asymmetric.rsa.pad import unpad_pkcs1_v1_5, unpad_oaep
 
+from pws.math import int_pow
+
 def decrypt(c_: AbstractText, d: int, n: int, pad_type: Optional[str]="pkcs1", **kwargs) -> AbstractText:
     
     if pad_type and not pad_type in ["pkcs1", "oaep", "none"]:
@@ -14,7 +16,7 @@ def decrypt(c_: AbstractText, d: int, n: int, pad_type: Optional[str]="pkcs1", *
     else:
         c = c_
 
-    m = pow(c, d, n)
+    m = int_pow(c, d, n)
  
     unpad_function = {
 

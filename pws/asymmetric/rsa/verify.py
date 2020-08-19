@@ -5,6 +5,7 @@ from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int,
 from pws.asymmetric.rsa.pad import unpad_verify_pss
 from pws.hash import SHA1
 
+from pws.math import int_pow
 
 def verify(m: AbstractText, sigma: AbstractText, e: int, n: int, pad_type: Optional[str]="pss", **kwargs) -> bool:
 
@@ -22,7 +23,7 @@ def verify(m: AbstractText, sigma: AbstractText, e: int, n: int, pad_type: Optio
     if isinstance(m, int):
         m = int_to_bytes(m)
     
-    decrypted = pow(sigma, e, n)
+    decrypted = int_pow(sigma, e, n)
 
     
     # takes a digest and a "decrypted" signature

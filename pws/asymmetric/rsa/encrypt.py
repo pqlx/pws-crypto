@@ -1,8 +1,9 @@
 from typing import Optional
 
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int, byte_length
-
 from pws.asymmetric.rsa.pad import pad_pkcs1_v1_5, pad_oaep
+
+from pws.math import int_pow
 
 def encrypt(m_: AbstractText, e: int, n: int, pad_type: Optional[str]="pkcs1", **kwargs) -> AbstractText:
     
@@ -25,7 +26,7 @@ def encrypt(m_: AbstractText, e: int, n: int, pad_type: Optional[str]="pkcs1", *
     if not (0 <= m < n):
         raise ValueError("m too big. Assertion 0 <= m < n should hold at all times")
 
-    c =  pow(m, e, n)
+    c =  int_pow(m, e, n)
     
     if isinstance(m_, bytes):
         return int_to_bytes(c)
