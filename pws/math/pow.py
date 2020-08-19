@@ -8,6 +8,16 @@ def int_pow(base: int, power: int, modulus: int=None):
     and this function exists only as a proof of Concept.
 
     This function only aims to support positive integer operands.
+    
+    ---------------------------------------------------------------
+    Benchmark compared to native python pow():
+    
+    pow(a, b, c) 10k times using random pool of a, b, c { [2, 99999999999999999999999999999999999999999999999999999]:
+        702 ms ± 5.44 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+    
+    int_pow(a, b, c) 10k times using same pool:
+        1.31 s ± 2.81 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
     """
     
     if base < 0 or power < 0 or (modulus and modulus < 0):
