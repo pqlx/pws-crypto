@@ -25,7 +25,7 @@ def do_test(key_size: int=2048, **kwargs):
     print(80*"-")
     print()
     n_blobs = kwargs.get("n_blobs", 8)
-    blob_range = kwargs.get("blob_range", (key_size // (8 * 4), key_size // (8 *2)))
+    blob_range = kwargs.get("blob_range", (key_size // (8 * 4), key_size // (8 * 3)))
     
     
     print(f"[*] Generating {n_blobs} blobs of data with length inbetween {blob_range} (in bytes)")

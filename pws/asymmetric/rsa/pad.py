@@ -116,6 +116,9 @@ def pad_oaep(
     l_hash = hash_func(label)
     hash_len = len(l_hash) 
     
+    if message_len > n_size - 2 * hash_len - 2:
+        raise BadOAEPPaddingException(f"Message too long. Expected value <= {n_size - 2 * hash_len - 2}, got {message_len}")
+
     ps = b"\x00" * (n_size - message_len - 2 * hash_len - 2)
 
     db = l_hash + ps + b"\x01" + m
