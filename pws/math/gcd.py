@@ -45,7 +45,9 @@ def gcd(*args: int):
         result = binary_gcd(a, b)
         
         # The list is empty.. we're done!
-        if len(args) == 0:
+        # if the result is 1 we can return prematurely, 
+        # because gcd(a, 1) == 1 for any positive integer a
+        if len(args) == 0 or result == 1:
             
             # Return the last result.
             return result
