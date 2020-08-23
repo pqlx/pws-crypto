@@ -6,6 +6,8 @@ from math import ceil
 
 from pws.hash import SHA1 as sha1
 
+from pws.helpers import xor_bytes as _xor
+
 from pws.asymmetric.rsa.helpers import AbstractText, int_to_bytes, bytes_to_int
 from pws.asymmetric.rsa.error import RSAPKCS1PaddingException, RSAOAEPPaddingException, RSAPSSPaddingException
 
@@ -85,12 +87,6 @@ def _mgf(message: bytes, size: int, hash_func: HashFunc):
         cnt += 1
 
     return result[:size]
-
-def _xor(a: bytes, b: bytes):
-    """XOR function for two byte sequences of arbitrary (but equal) length"""
-    assert len(a) == len(b)
-
-    return bytes([x ^ y for x,y in zip(a, b)])
 
 _sha1digest = lambda x: sha1(x).digest
 
