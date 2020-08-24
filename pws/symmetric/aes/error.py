@@ -4,5 +4,5 @@ class AESException(Exception):
 class AESPaddingException(AESException):
     pass
 
-class AESPKCS7PaddingException(AESPAddingException):
+class AESPKCS7PaddingException(AESPaddingException):
     pass
