@@ -1,7 +1,7 @@
 from typing import List
 
 
-from pws.symmetric.aes.error import AESError
+from pws.symmetric.aes.error import AESException
 from pws.symmetric.aes.state import AESState
 
 from pws.symmetric.aes.key_schedule import generate_round_keys
@@ -10,10 +10,10 @@ from pws.symmetric.aes.key_schedule import generate_round_keys
 def _check_params(block: bytes, key: bytes) -> None:
     
     if len(block) != 16:
-        raise AESError(f"Raw AES can only process a 128-bit (= 16-byte) block: got a {len(block) * 8}-bit block.")
+        raise AESException(f"Raw AES can only process a 128-bit (= 16-byte) block: got a {len(block) * 8}-bit block.")
     
     if len(key) not in (16, 24, 32):
-        raise AESError(f"Raw AES can only use a 128-, 192-, or 256-bit (= 16-, 24-, or 32-byte) key: got a {len(key) * 8}-bit key.")
+        raise AESException(f"Raw AES can only use a 128-, 192-, or 256-bit (= 16-, 24-, or 32-byte) key: got a {len(key) * 8}-bit key.")
 
     
 
