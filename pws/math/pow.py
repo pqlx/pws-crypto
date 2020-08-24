@@ -1,13 +1,20 @@
 from typing import List
+from sys import getrecursionlimit, setrecursionlimit
 
-
-def int_pow(base: int, power: int, modulus: int=None):
+def int_pow(base: int, power: int, modulus: int=None, safe: bool=True):
     """
     Calculate `base` raised to `power`, optionally mod `modulus`
     The python standard library offers the same functionality,
     and this function exists only as a proof of Concept.
 
     This function only aims to support positive integer operands.
+
+    the `safe` parameter only applies to modular exponentiation.
+    for values with a large hamming weight, the recursion limit
+    can be hit quite easily, as one round of recursion is needed
+    for every set bit. If `safe` is set to true, the recursion
+    depth is adjusted accordingly during the computation, then
+    restored. 
     
     ---------------------------------------------------------------
     Benchmark compared to native python pow():
@@ -41,7 +48,6 @@ def int_pow(base: int, power: int, modulus: int=None):
     # allows for a much faster computation than (base**power) % modulus.
 
     # the identity `(a * b) mod n = (a mod n) * (b mod n) mod n` aids us here.
-    
     
     # We start by splitting the power up in a sum of powers of two.
         
@@ -84,6 +90,9 @@ def int_pow(base: int, power: int, modulus: int=None):
         """ 
         Calculate (base**(2**a_0) * base**(2**a_1) * ... * base**(2**a_k)) mod n, with every `a` in cache.
         """
+        
+        # BEWARE: this function can easily exceed python max recursion depth (of 1000).
+        # for values with a large hamming weight, adjust the recursion depth limit accordingly.
 
         # Identity: (a * b) mod n = (a mod n) * (b mod n) mod n 
         # this can be applied recursively with relative ease.
@@ -92,7 +101,17 @@ def int_pow(base: int, power: int, modulus: int=None):
         
         if len(args) == 1:
             return cache[args[0]]
-        
+        #   
         return (cache[args.pop()]) * (product_mod_n(args, n)) % n
     
-    return product_mod_n(po2, modulus)
+    if safe:
+        # Make sure we won't hit the recursion limit
+        
+        old = getrecursionlimit()
+        setrecursionlimit(999999999)
+        result = product_mod_n(po2, modulus)
+        setrecursionlimit(old)
+
+        return result
+    else:
+        return product_mod_n(po2, modulus)

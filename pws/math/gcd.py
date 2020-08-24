@@ -1,5 +1,12 @@
-def gcd(*args: int):
-    """Calculates the Greatest Common Divisor (gcd) of the integers `args`, using The euclidean algorithm."""
+from sys import getrecursionlimit, setrecursionlimit 
+
+
+def gcd(*args: int, safe: bool=True):
+    """
+    Calculates the Greatest Common Divisor (gcd) of the integers `args`, using the Euclidean algorithm.
+    
+    `safe` mode will ensure the recursion depth limit will not be reached.
+    """
     
     # Calculating the gcd of more than two integers can be done iteratively:
     # i.e gcd(a, b, c) = gcd(gcd(a, b), c) ...
@@ -30,8 +37,15 @@ def gcd(*args: int):
                 return b
             
             return _recurse_gcd(b % a, a)
-
-        return _recurse_gcd(a, b)
+        
+        if safe:
+            old = getrecursionlimit()
+            setrecursionlimit(999999999)
+            result = _recurse_gcd(a, b)
+            setrecursionlimit(old)
+            return result
+        else:
+            return _recurse_gcd(a, b)
 
     if len(args) == 1:
         return args[0] # gcd(a) = a
