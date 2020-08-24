@@ -42,6 +42,9 @@ def pkcs7_unpad(padded: bytes, block_size=0x10):
 
     if n_to_truncate > len(padded):
         raise AESPKCS7PaddingException(f"Claimed padding length '{n_to_truncate:02x}' larger that message size '{len(padded):02x}'")
+    
+    if any(x != n_to_truncate for x in padded[-n_to_truncate:]):
+        raise AESPKCS7PaddingException(f"Not all padding bytes equal to '{n_to_truncate:02x}'.")
 
     return padded[:-n_to_truncate]
 
