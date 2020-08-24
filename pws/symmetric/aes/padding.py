@@ -1,5 +1,14 @@
 from pws.symmetric.aes.error import AESPKCS7PaddingException
 
+
+encoders = {
+    "pkcs7": pkcs7_pad
+}
+
+decoders = {
+    "pkcs7": pkcs7_unpad
+}
+
 def pkcs7_pad(plaintext: bytes, block_size: int=0x10) -> bytes:
     """
     Pad a message using the byte padding algorithm described in PKCS#7
@@ -19,7 +28,15 @@ def pkcs7_pad(plaintext: bytes, block_size: int=0x10) -> bytes:
 
 
 def pkcs7_unpad(padded: bytes, block_size=0x10):
+    """
+    Unpad a message encoded using the byte padding algorithm described in PKCS#7
     
+    Be VERY careful about disclosing the padding decoding routine result to an adversary.
+    A padding oracle WILL render your encryption scheme useless.
+
+    The specification describing the padding algorithm can be found here:
+    https://tools.ietf.org/html/rfc2315#section-10.3
+    """ 
     assert 0 < block_size < 0x100
     
     n_to_truncate = padded[-1]
