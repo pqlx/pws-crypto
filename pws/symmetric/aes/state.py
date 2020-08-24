@@ -1,6 +1,6 @@
 from typing import Union, Tuple
 
-from pws.math.gf2 import GF2, GF2Element
+from pws.math import GF2, GF2Element
 
 class AESState:
     """
