@@ -1,14 +1,6 @@
 from pws.symmetric.aes.error import AESPKCS7PaddingException
 
 
-encoders = {
-    "pkcs7": pkcs7_pad
-}
-
-decoders = {
-    "pkcs7": pkcs7_unpad
-}
-
 def pkcs7_pad(plaintext: bytes, block_size: int=0x10) -> bytes:
     """
     Pad a message using the byte padding algorithm described in PKCS#7
@@ -48,4 +40,13 @@ def pkcs7_unpad(padded: bytes, block_size=0x10):
         raise AESPKCS7PaddingException(f"Claimed padding length '{n_to_truncate:02x}' larger that message size '{len(padded):02x}'")
 
     return padded[:-n_to_truncate]
+
+encoders = {
+    "pkcs7": pkcs7_pad
+}
+
+decoders = {
+    "pkcs7": pkcs7_unpad
+}
+
 
