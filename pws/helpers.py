@@ -7,7 +7,10 @@ def lcs32(b: bytes, s: int):
     
     return struct.pack(">I", ((u << (s*8)) | (u >> (32 - s*8))) & 0xffffffff)
 
+def lcs8_bit(b: int, s: int):
+    """Shift 8-bit quantity `b` `s` bits to the left."""
 
+    return ((b << s) | (b >> (8 - s))) & 0xff
 
 def xor_bytes(a: bytes, b: bytes):
     """XOR function for two byte sequences of arbitrary (but equal) length"""
