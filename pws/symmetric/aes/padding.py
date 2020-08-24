@@ -33,7 +33,7 @@ def pkcs7_unpad(padded: bytes, block_size=0x10):
     
 
     if len(padded) % block_size != 0:
-        raise AESPKCS7PaddingException(f"Incorrect padded message size '{len(padded)'; should be an integer multiple of ${block_size}.")
+        raise AESPKCS7PaddingException(f"Incorrect padded message size '{len(padded)}'; should be an integer multiple of ${block_size}.")
 
     n_to_truncate = padded[-1]
 
