@@ -49,11 +49,13 @@ def pkcs7_unpad(padded: bytes, block_size=0x10):
     return padded[:-n_to_truncate]
 
 encoders = {
-    "pkcs7": pkcs7_pad
+    "pkcs7": pkcs7_pad,
+    "none": lambda x: x
 }
 
 decoders = {
-    "pkcs7": pkcs7_unpad
+    "pkcs7": pkcs7_unpad,
+    "none": lambda x: x
 }
 
 
