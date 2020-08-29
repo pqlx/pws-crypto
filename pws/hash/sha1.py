@@ -111,10 +111,3 @@ class SHA1(Hash):
         
         # Convert it to a sequence of bytes and return.
         return result.to_bytes(160 // 8, "big")
-
-if __name__ == "__main__":
-
-    from pws.hash.hash_test import run_test
-    from hashlib import sha1
-
-    run_test("SHA-1", SHA1, sha1)

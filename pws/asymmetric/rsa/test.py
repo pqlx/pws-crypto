@@ -41,25 +41,24 @@ def do_test(key_size: int=2048, **kwargs):
     print("-"*80)
     print()
     
-    time.sleep(1)
     
     n_encrypt_success = 0
     for i, blob in enumerate(blobs):
         
         print(f"[*] Blob {i}:")
-        print(hexdump(blob))
+        hexdump(blob)
         print()
 
         encrypted = kp.pub.encrypt(blob, pad_type=encrypt_pad_type)
 
         print("[*] Encrypted:")
-        print(hexdump(encrypted)) 
+        hexdump(encrypted)
         print()
         
         decrypted = kp.priv.decrypt(encrypted, pad_type=encrypt_pad_type)
         
         print("[*] Decrypted:")
-        print(hexdump(decrypted))
+        hexdump(decrypted)
 
         if decrypted == blob:
             print("[+] Success! m == decrypt(encrypt(m))")
@@ -69,7 +68,6 @@ def do_test(key_size: int=2048, **kwargs):
         print("-"*80)
         print()
         
-        time.sleep(0.5)
 
     sign_pad_type = kwargs.get("signature_pad_type", "pss")
     
@@ -77,19 +75,18 @@ def do_test(key_size: int=2048, **kwargs):
     print("-"*80)
     print()
     
-    time.sleep(1)
     
     n_signature_success = 0
     for i, blob in enumerate(blobs):
 
         print(f"[*] Blob {i}:")
-        print(hexdump(blob))
+        hexdump(blob)
         print()
 
         signature = kp.priv.sign(blob, pad_type=sign_pad_type)
 
         print("[*] Signed:")
-        print(hexdump(signature))
+        hexdump(signature)
         print()
 
         print("[*] Verifying signature:")
@@ -103,7 +100,6 @@ def do_test(key_size: int=2048, **kwargs):
         
         print("-"*80)
         print()
-        time.sleep(0.5)
     
     print("Results:")
     print("-"*80)
@@ -120,8 +116,7 @@ if __name__ == "__main__":
     parser.add_argument("--encryption-padding", choices=["pkcs1", "oaep", "none"], default="pkcs1", type=str, help="Padding mode to use for encryption") 
     parser.add_argument("--signature-padding", choices=["pss", "none"], default="pss", type=str, help="Padding mode to use for signatures")
     parser.add_argument("--keysize", "-n", default=2048, type=int, help="Key size to generate (in bits). Should be divisible by eight.")
-    parser.add_argument("--blobs", "-b", default=8, type=int, help="Amount of random plaintext blobs to generate.:")
+    parser.add_argument("--blobs", "-b", default=8, type=int, help="Amount of random plaintext blobs to generate.")
     args = parser.parse_args()
     
-    print(args)
     do_test(key_size=args.keysize, n_blobs=args.blobs, encryption_pad_type=args.encryption_padding, signature_pad_type=args.signature_padding)

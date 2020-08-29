@@ -133,11 +133,3 @@ class MD5(Hash):
         
         # fill the constants
         cls.constants = [floor(e * abs( sin(i + 1) )) for i in range(64)]
-
-if __name__ == "__main__":
-    
-    from pws.hash.hash_test import run_test
-    from hashlib import md5
-
-    run_test("MD5", MD5, md5)
-
