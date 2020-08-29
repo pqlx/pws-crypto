@@ -27,7 +27,7 @@ def encrypt_raw(block: bytes, key: bytes) -> bytes:
     state = AESState(block)
     
     state.add_round_key(round_keys.pop(0))
-    n_rounds = {16: 9, 24: 11, 36: 13}[len(key)]
+    n_rounds = {16: 9, 24: 11, 32: 13}[len(key)]
 
     for _ in range(n_rounds):
 
@@ -52,7 +52,7 @@ def decrypt_raw(block: bytes, key: bytes) -> bytes:
 
     state.add_round_key(round_keys.pop(-1))
      
-    n_rounds = {16: 9, 24: 11, 36: 13}[len(key)]
+    n_rounds = {16: 9, 24: 11, 32: 13}[len(key)]
 
     for _ in range(n_rounds):
 
