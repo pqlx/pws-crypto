@@ -13,7 +13,7 @@ def run_test(hash_name: str, our_hash: Type[OurHash], their_hash: Type[TheirHash
     import secrets
     import hashlib
     import random
-    from pwn import hexdump # really need a better library but this looks pretty.
+    from hexdump import hexdump
 
     n_blobs = kwargs.get("n_blobs") or 8
     blob_range = kwargs.get("blob_range") or (128, 512)

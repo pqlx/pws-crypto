@@ -1,6 +1,6 @@
 from pws.asymmetric.rsa import generate_keypair, RSAKeyPair, RSAPublicKey, RSAPrivateKey
 
-from pwn import hexdump
+from hexdump import hexdump
 
 from datetime import datetime
 import secrets
