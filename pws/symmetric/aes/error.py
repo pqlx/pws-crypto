@@ -1,6 +1,10 @@
 class AESException(Exception):
     pass
 
+
+class AESKeyException(AESException):
+    pass
+
 class AESEncryptionException(AESException):
     pass
 
