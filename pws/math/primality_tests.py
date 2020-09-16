@@ -81,6 +81,9 @@ def miller_rabin_test(n: int, rounds: int = 32):
     if n in (2, 3):
         return PrimalityType.PRIME
     
+    if n == 1:
+        return PrimalityType.COMPOSITE
+
     if not n & 1:
         return PrimalityType.COMPOSITE
 
