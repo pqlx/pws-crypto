@@ -1,5 +1,6 @@
 from pws.hash.md5 import MD5
 from pws.hash.sha1 import SHA1
+from pws.hash.sha256 import SHA256
 
 from typing import Type
 
@@ -53,7 +54,7 @@ if __name__ == "__main__":
             description=f"Hash Testing module",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
-    parser.add_argument("hash", choices=["md5", "sha1"], type=str, help="Hashing algorithm to test.")
+    parser.add_argument("hash", choices=["md5", "sha1", "sha256"], type=str, help="Hashing algorithm to test.")
     parser.add_argument("--blobs", type=int, help="Amount of random plaintext blobs to generate.", default=32)
     parser.add_argument("--min-size", type=int, help="Minimum blob size.", default=128)
     parser.add_argument("--max-size", type=int, help="Maximum blob size.", default=2048)
@@ -65,6 +66,8 @@ if __name__ == "__main__":
         name, our, their = "SHA-1", SHA1, hashlib.sha1
     elif args.hash == "md5":
         name, our, their = "MD5", MD5, hashlib.md5
+    elif args.hash == "sha256":
+        name, our, their = "SHA-256", SHA256, hashlib.sha256
 
     do_test(hash_name=name, our_hash=our, their_hash=their, n_blobs=args.blobs, blob_range=(args.min_size, args.max_size))
 
