@@ -75,8 +75,9 @@ class SHA256(Hash):
                     rr(w_get(i - 2), 17) ^ rr(w_get(i - 2), 19) ^  (w_get(i - 2) >> 10)
                 )
                 w_set(i, w_get(i - 16) + s[0] + w_get(i - 7) + s[1])
-
+            
             a = h.copy()
+            
             for i in range(64):
                 S1 = rr(a[4], 6) ^ rr(a[4], 11) ^ rr(a[4], 25)
                 ch = (a[4] & a[5]) ^ (~a[4] & a[6])
