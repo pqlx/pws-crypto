@@ -7,3 +7,4 @@ from pws.math.prod import prod
 from pws.math.modinv import modinv
 from pws.math.lincongr import solve_lincongr 
 from pws.math.gf2 import GF2, GF2Element
+from pws.math.ec import ECurve, ECurvePoint, ECurveIdentity
