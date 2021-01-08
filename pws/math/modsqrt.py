@@ -38,5 +38,5 @@ def modsqrt(n, p):
         t = (t * c) % p
         m = i
 
-    return r
+    return (r, p)
 
