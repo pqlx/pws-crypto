@@ -1,4 +1,4 @@
-from pws.math import modinv
+from pws.math import modinv, modsqrt
 
 class ECurvePoint:
     
@@ -125,9 +125,12 @@ class ECurve:
         self.identity = ECurveIdentity(self)
 
     def is_element(self, point: ECurvePoint):
-        p = self.modulus
 
-        return pow(point.y, 2, p) == ((pow(point.x, 3, p) + (self.a * point.x) % p + self.b) % p)
+        if isinstance(point, ECurveIdentity):
+            return True
+
+        p = self.modulus
+        return pow(point.y, 2, p) == ((x**3 + (self.a * point.x) + self.b) % p)
 
     def point(self, x: int, y: int):
         point = ECurvePoint(self, x, y)
@@ -135,6 +138,19 @@ class ECurve:
         assert self.is_element(point)
         return point
     
+    def points_for_x(self, x: int):
+        p = self.modulus
+        
+        y_squared = (x**3 + self.a * x + self.b) % p
+        
+        y = modsqrt(y_squared, p)[0]
+        
+        if y == 0:
+            return (self.point(x, 0),)
+        
+        return (self.point(x, y), self.point(x, (-y % p)))
+        
+
     def __eq__(self, other: 'ECurve'):
         return self.a == other.a and self.b == other.b and self.modulus == other.modulus
 

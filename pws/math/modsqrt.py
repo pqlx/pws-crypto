@@ -4,7 +4,7 @@ def legendre_symbol(a, p):
 def modsqrt(n, p):
     """Finds x^2 = n (mod p)"""
     if legendre_symbol(n, p) != 1:
-        return (None, p)
+        raise Exception(f"{n} is not a perfect square (mod {p})")
     
     q = p - 1
     s = 0
