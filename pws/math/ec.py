@@ -20,7 +20,34 @@ class ECurvePoint:
 
         return point
     
+    def __mul__(self, other):
+        if not isinstance(other, int):
+            return NotImplemented
+    
+        Q = self
+        R = self.curve.identity
+        n = other
+        while n > 0:
+
+            if n & 1:
+                R = R + Q
+
+            Q = Q + Q
+            n = n // 2
+        
+        return R
+    
+    def __rmul__(self, other):
+        if not isinstance(other, int):
+            return NotImplemented
+
+        return self.__mul__(other)
+
     def __add__(self, other):
+        
+        if not isinstance(other, ECurvePoint):
+            return NotImplemented
+
         if self == self.curve.identity:
             return other.copy()
         
