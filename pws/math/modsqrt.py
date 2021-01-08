@@ -13,7 +13,7 @@ def modsqrt(n, p):
         s += 1
 
     if s == 1:
-        return pow(n, (p + 1) // 4, p)
+        return (pow(n, (p + 1) // 4, p), p)
 
     for z in range(2, p):
         if p - 1 == legendre_symbol(z, p):
