@@ -130,7 +130,7 @@ class ECurve:
             return True
 
         p = self.modulus
-        return pow(point.y, 2, p) == ((x**3 + (self.a * point.x) + self.b) % p)
+        return pow(point.y, 2, p) == ((point.x**3 + (self.a * point.x) + self.b) % p)
 
     def point(self, x: int, y: int):
         point = ECurvePoint(self, x, y)
