@@ -97,7 +97,7 @@ class ECurveIdentity(ECurvePoint):
         super(ECurveIdentity, self).__init__(curve, float("inf"), float("inf"))
 
     def copy(self):
-        return ECuveIdentity(self.curve)
+        return ECurveIdentity(self.curve)
 
     def __neg__(self):
         return self.copy()
